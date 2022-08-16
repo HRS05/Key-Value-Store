@@ -3,7 +3,7 @@ import com.key.value.dataHandler.exceptions.*;
 import com.key.value.dataHandler.dao.*;
 import java.util.*;
 import java.io.*;
-public class CheckingAdd
+public class CheckingEdit
 {
 public static void main(String gg[])
 {
@@ -11,10 +11,10 @@ try
 {
 KeyValueDataHandlerInterface kvd;
 kvd=new KeyValueDataHandler();
-String key,value;
-key=gg[0];
-value=gg[1];
-System.out.println(kvd.add(key,value,"977c7f42-c584-481f-a041-c1319cea428a.data"));
+String key=gg[0];
+String value=gg[1];
+kvd.edit(key,value,"977c7f42-c584-481f-a041-c1319cea428a.data");
+System.out.println("Edited");
 //System.out.println("key : "+key+" value "+value);
 }catch(KeyValueException daoException)
 {

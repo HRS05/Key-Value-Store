@@ -3,18 +3,17 @@ import com.key.value.dataHandler.exceptions.*;
 import com.key.value.dataHandler.dao.*;
 import java.util.*;
 import java.io.*;
-public class CheckingAdd
+public class Delete
 {
 public static void main(String gg[])
 {
 try
 {
+String key=gg[0];
 KeyValueDataHandlerInterface kvd;
 kvd=new KeyValueDataHandler();
-String key,value;
-key=gg[0];
-value=gg[1];
-System.out.println(kvd.add(key,value,"977c7f42-c584-481f-a041-c1319cea428a.data"));
+kvd.delete(key,"977c7f42-c584-481f-a041-c1319cea428a.data");
+System.out.println("deleted");
 //System.out.println("key : "+key+" value "+value);
 }catch(KeyValueException daoException)
 {

@@ -3,8 +3,8 @@ import com.key.value.handler.exceptions.*;
 import java.util.*;
 public interface KeyValueHandlerInterface
 {
-    public void set(String key,String value) throws KeyValueException;
-    public void delete(String key) throws KeyValueException;
-    public void get(String key) throws KeyValueException;
+    public void set(String key,String value) throws KeyValueHandlerException;
+    public void remove(String key) throws KeyValueHandlerException;
+    public String get(String key) throws KeyValueHandlerException;
     //public void add(String key,String value) throws KeyValueException;
 }

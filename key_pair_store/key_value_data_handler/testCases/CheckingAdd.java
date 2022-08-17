@@ -10,11 +10,13 @@ public static void main(String gg[])
 try
 {
 KeyValueDataHandlerInterface kvd;
-kvd=new KeyValueDataHandler();
+String directory="C:\\git key value\\Key-Value-Store\\dataFiles\\";
+System.out.println(directory);
+kvd=new KeyValueDataHandler(directory);
 String key,value;
 key=gg[0];
 value=gg[1];
-System.out.println(kvd.add(key,value,"977c7f42-c584-481f-a041-c1319cea428a.data"));
+System.out.println(kvd.add(key,value,"dfa8d3a6-4d80-4672-91be-cc01de5ef426.data"));
 //System.out.println("key : "+key+" value "+value);
 }catch(KeyValueException daoException)
 {

@@ -147,7 +147,7 @@ public void edit(String key,String value,String fileName) throws KeyValueExcepti
         while(currentRandomAccessFile.length()>currentRandomAccessFile.getFilePointer())
         {
             fileKey=currentRandomAccessFile.readLine().trim();
-            if(fileKey.equalsIgnoreCase(key))
+            if(fileKey.equals(key))
             {
                 boolKeyFound=true;
                 filePointerPosition=currentRandomAccessFile.getFilePointer();
@@ -245,7 +245,7 @@ public void delete(String key,String fileName) throws KeyValueException
             filePointerPosition=currentRandomAccessFile.getFilePointer();
             fileKey=currentRandomAccessFile.readLine().trim();
 
-            if(fileKey.equalsIgnoreCase(key))
+            if(fileKey.equals(key))
             {
                 boolKeyFound=true;
                 break;
@@ -340,7 +340,7 @@ public String get(String key,String fileName) throws KeyValueException
         while(currentRandomAccessFile.length()>currentRandomAccessFile.getFilePointer())
         {
             fileKey=currentRandomAccessFile.readLine().trim();
-            if(fileKey.equalsIgnoreCase(key))
+            if(fileKey.equals(key))
             {
                 boolKeyFound=true;
                 break;
@@ -378,7 +378,7 @@ public ConcurrentMap<String,Pair> populateMap() throws KeyValueException
 
     for (File file : files) {
         if (file.isFile()) {
-        System.out.println(file.getName());
+                   
         String name=file.getName();
         if(!name.endsWith(".data")) continue;
         try

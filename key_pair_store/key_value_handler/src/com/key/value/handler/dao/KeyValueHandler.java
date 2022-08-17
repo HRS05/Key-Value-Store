@@ -104,7 +104,11 @@ public class KeyValueHandler implements KeyValueHandlerInterface
     }
     public String get(String key) throws KeyValueHandlerException
     {
+        if(this.keyValueMap.containsKey(key);)
+        {
         return this.keyValueMap.get(key).getValue();
+        }
+        return null;
     }
 
 }

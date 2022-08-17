@@ -11,8 +11,8 @@ try
 {
 String key=gg[0];
 KeyValueDataHandlerInterface kvd;
-kvd=new KeyValueDataHandler();
-kvd.delete(key,"977c7f42-c584-481f-a041-c1319cea428a.data");
+kvd=new KeyValueDataHandler("F://datafile//");
+kvd.delete(key,"52f92de9-4799-4fe9-a91d-1dbf0be645ce.data");
 System.out.println("deleted");
 //System.out.println("key : "+key+" value "+value);
 }catch(KeyValueException daoException)

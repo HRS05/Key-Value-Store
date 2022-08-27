@@ -17,6 +17,7 @@ public KeyValueDataHandler(String directory)
 
 public String add(String key,String value,String fileName) throws KeyValueException
 {
+    System.out.println("KeyValueDataHandler add operation got called -> key : "+key+" value : "+value+" fileName "+fileName);
     if(key==null || key.length()==0) throw new KeyValueException("Key data is null/size=0");
     if(value==null || value.length()==0) throw new KeyValueException("value data is null/size=0");
     if(fileName!=null && fileName.length()==0) throw new KeyValueException("File name to add value is size=0");
@@ -112,10 +113,10 @@ public String add(String key,String value,String fileName) throws KeyValueExcept
 }
 public void edit(String key,String value,String fileName) throws KeyValueException
 {
+    System.out.println("KeyValueDataHandler edit operation got called -> key : "+key+" value : "+value+" fileName "+fileName);
     if(key==null || key.length()==0) throw new KeyValueException("Key data is null/size=0");
     if(value==null || value.length()==0) throw new KeyValueException("value data is null/size=0");
     if(fileName==null || fileName.length()==0) throw new KeyValueException("File name to update value is size=0");
-    String currentDirectory = System.getProperty("user.dir");
     RandomAccessFile currentRandomAccessFile=null;
     RandomAccessFile tempRandomAccessFile=null;
 
@@ -210,6 +211,7 @@ public void edit(String key,String value,String fileName) throws KeyValueExcepti
 }
 public void delete(String key,String fileName) throws KeyValueException
 {
+    System.out.println("KeyValueDataHandler delete operation got called -> key : "+key+" fileName "+fileName);
     if(key==null || key.length()==0) throw new KeyValueException("Key data is null/size=0");
     if(fileName==null || fileName.length()==0) throw new KeyValueException("File name to delete value is size=0");
     RandomAccessFile currentRandomAccessFile=null;
@@ -309,6 +311,7 @@ public void delete(String key,String fileName) throws KeyValueException
 }
 public String get(String key,String fileName) throws KeyValueException
 {
+    System.out.println("KeyValueDataHandler get operation got called -> key : "+key+" fileName "+fileName);
     if(key==null || key.length()==0) throw new KeyValueException("error : key is null/size=0");
     if(fileName==null || fileName.length()==0) throw new KeyValueException("File name to delete value is size=0");
     String currentDirectory;
@@ -372,6 +375,7 @@ public String get(String key,String fileName) throws KeyValueException
 }
 public ConcurrentMap<String,Pair> populateMap() throws KeyValueException
 {
+    System.out.println("Population from KeyValueDataHandler is called");
     ConcurrentMap<String,Pair> keyValueMap=new ConcurrentHashMap<String,Pair>();
 	File[] files = new File(this.directory).listFiles();
     RandomAccessFile randomAccessFile=null;
@@ -394,6 +398,7 @@ public ConcurrentMap<String,Pair> populateMap() throws KeyValueException
             if(dataCount==0) 
             {
                 randomAccessFile.close();
+                file.delete();
                 continue;
             }
             String fileKey;

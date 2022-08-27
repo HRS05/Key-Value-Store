@@ -9,20 +9,23 @@ import com.key.value.helper.pair.*;
 import java.lang.*;
 import java.util.concurrent.*;
 
-public class KeyValueHandler implements KeyValueHandlerInterface
+public class KeyValueHandler extends Thread implements KeyValueHandlerInterface
 {
     private String fileName;
     private String directory;
     private ConcurrentMap<String,Pair> keyValueMap=null;
     private static KeyValueHandler keyValueHandler=null;
-
+    private Queue<OperationObject> queue;
     private KeyValueHandler(String directory)
     {
         this.fileName=null;
         this.directory=directory;
+        this.queue=new LinkedList<>();
+        start();
+
         try{
             this.keyValueMap=new KeyValueDataHandler(this.directory).populateMap();
-        }catch(KeyValueException exception){
+        }catch(Exception exception){
             this.keyValueMap=new ConcurrentHashMap<String,Pair>();
         }
         
@@ -39,72 +42,146 @@ public class KeyValueHandler implements KeyValueHandlerInterface
         return keyValueHandler;
     }
 
+    public void run() 
+    {
+        while(true)
+        {
+            System.out.println("queue on call");
+            while(this.queue.size()>0)
+            {
+                OperationObject OJ=this.queue.peek(); this.queue.remove();
+                String type=OJ.getType();
+                String fileName=OJ.getFileName();
+                String key=OJ.getKey();
+                String value=OJ.getValue();
+
+                if(type=="add"){
+                    try
+                    {
+                        System.out.println("queue KeyValueHandler add operation got called -> key : "+key+" value : "+value+" fileName "+this.fileName);
+                        this.fileName=new KeyValueDataHandler(this.directory).add(key,value,this.fileName);
+                        String CurrentValue=this.keyValueMap.get(key).getValue();
+                        this.keyValueMap.replace(key, new Pair(null,CurrentValue), new Pair(this.fileName,CurrentValue));
+                    }catch(Exception exception)
+                    {
+                        this.queue.add(OJ);
+                        System.out.println("Exception from thread :-> "+exception.getMessage());
+                    }
+                }
+                else if(type=="edit"){
+                    try
+                    {
+                        Pair pair;
+                        if(fileName==null || fileName.length()==0){
+                            pair=this.keyValueMap.get(key);
+                            if(pair.getKey()==null || pair.getKey().length()==0) {
+                                this.queue.add(OJ);
+                                continue;
+                            }
+                            fileName=pair.getKey();
+                            OJ.setFileName(fileName);
+                        }
+                        System.out.println("queue KeyValueHandler edit operation got called -> key : "+key+" value : "+value+" fileName "+fileName);
+                        new KeyValueDataHandler(this.directory).edit(key,value,fileName);
+                    }catch(Exception exception)
+                    {
+                        this.queue.add(OJ);
+                        System.out.println("Exception from thread :-> "+exception.getMessage());
+                    }
+                }
+                else if(type=="remove"){
+                    try
+                    {
+                        Pair pair;
+                        if(fileName==null || fileName.length()==0){
+                            pair=this.keyValueMap.get(key);
+                            if(pair.getKey()==null || pair.getKey().length()==0) {
+                                this.queue.add(OJ);
+                                continue;
+                            }
+                            fileName=pair.getKey();
+                            OJ.setFileName(fileName);
+                        }
+                        System.out.println("queue KeyValueHandler remove operation got called -> key : "+key+" value : "+value+" fileName "+fileName);
+                        new KeyValueDataHandler(this.directory).delete(key,fileName);
+                    }catch(Exception exception)
+                    {
+                        this.queue.add(OJ);
+                        System.out.println("Exception from thread :-> "+exception.getMessage());
+                    }
+                }
+                else{
+                System.out.println("Invalid data in queue");
+                }
+            }
+        }
+    }
+
+
+
+
+
     public void set(String key,String value) throws KeyValueHandlerException
     {
+        System.out.println("KeyValueHandler set operation got called -> key : "+key+" value : "+value);
         if(key==null || key.trim().length()==0) throw new KeyValueHandlerException("Key data is null/size=0");
         if(value==null || value.trim().length()==0) throw new KeyValueHandlerException("value data is null/size=0");
         key=key.trim();
         value=value.trim();
-        if(this.keyValueMap.isEmpty()){
-            try{
-                this.fileName=new KeyValueDataHandler(this.directory).add(key,value,null);
-                this.keyValueMap.put(key,new Pair(this.fileName,value));
-                return;
-            }
-            catch(KeyValueException exception)
-            {
-                throw new KeyValueHandlerException("Error : unable to add data in null file system -->"+exception.getMessage());
-            }
-        }
-        if(this.keyValueMap.containsKey(key)){
-            try{
-                Pair pair=this.keyValueMap.get(key);
-                String oldFileName=pair.getKey();
-                new KeyValueDataHandler(this.directory).edit(key,value,oldFileName);
-                this.keyValueMap.replace(key, pair, new Pair(oldFileName,value));
-                return;
-            }
-            catch(KeyValueException exception)
-            {
-                throw new KeyValueHandlerException("Error : unable to edit data -->"+exception.getMessage());
-            }
+        if(this.keyValueMap.containsKey(key))
+        {    
+            Pair pair=this.keyValueMap.get(key);
+            String oldFileName=pair.getKey();
+            this.keyValueMap.replace(key, pair, new Pair(oldFileName,value));
+            OperationObject OJ=new OperationObject();
+            OJ.setFileName(oldFileName);
+            OJ.setType("edit");
+            OJ.setKey(key);
+            OJ.setValue(value);
+            this.queue.add(OJ);
+            return;
         }
         else
         {
-            try{
-                this.fileName=new KeyValueDataHandler(this.directory).add(key,value,this.fileName);
-                this.keyValueMap.put(key,new Pair(this.fileName,value));
-                return;
-            }
-            catch(KeyValueException exception)
-            {
-                throw new KeyValueHandlerException("Error : unable to add data file system -->"+exception.getMessage());
-            }
+            this.keyValueMap.put(key,new Pair(null,value));
+            OperationObject OJ=new OperationObject();
+            OJ.setFileName(this.fileName);
+            OJ.setType("add");
+            OJ.setKey(key);
+            OJ.setValue(value);
+            this.queue.add(OJ);
+            return;
         }
 
     }
     public void remove(String key) throws KeyValueHandlerException
     {
+        System.out.println("KeyValueHandler remove operation got called -> key : "+key);
         if(key==null || key.trim().length()==0) throw new KeyValueHandlerException("Key data is null/size=0");
         key=key.trim();
-        if(this.keyValueMap.containsKey(key)){
-            try{
-                Pair pair=this.keyValueMap.get(key);
-                String oldFileName=pair.getKey();
-                new KeyValueDataHandler(this.directory).delete(key,oldFileName);
-                this.keyValueMap.remove(key, pair);
-                return;
-            }
-            catch(KeyValueException exception)
-            {
-                throw new KeyValueHandlerException("Error : unable to remove data from file -->"+exception.getMessage());
-            }
+        if(this.keyValueMap.containsKey(key))
+        {
+            Pair pair=this.keyValueMap.get(key);
+            String oldFileName=pair.getKey();
+            String value=pair.getValue();
+            this.keyValueMap.remove(key, pair);
+            OperationObject OJ=new OperationObject();
+            OJ.setFileName(oldFileName);
+            OJ.setType("remove");
+            OJ.setKey(key);
+            OJ.setValue(value);
+            this.queue.add(OJ);
+            return;
         }
-        return;
+        else
+        {
+            throw new KeyValueHandlerException("Key is not in store");
+        }
     }
     public String get(String key) throws KeyValueHandlerException
     {
-        if(this.keyValueMap.containsKey(key);)
+        System.out.println("KeyValueHandler get operation got called -> key : "+key);
+        if(this.keyValueMap.containsKey(key))
         {
         return this.keyValueMap.get(key).getValue();
         }

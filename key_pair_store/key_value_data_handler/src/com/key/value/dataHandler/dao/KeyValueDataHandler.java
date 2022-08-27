@@ -231,6 +231,7 @@ public void delete(String key,String fileName) throws KeyValueException
         if(currentRandomAccessFile.length()==0)
         {
             currentRandomAccessFile.close();
+            currentFile.delete();
             throw new KeyValueException("error : not expected (file not exists.)");
         }
 
@@ -238,6 +239,7 @@ public void delete(String key,String fileName) throws KeyValueException
         if(dataCount==0) 
         {
             currentRandomAccessFile.close();
+            currentFile.delete();
             throw new KeyValueException("error : not expected (file not exists.) can not delete");
         }
                            //Now searching of key begins......
@@ -284,12 +286,19 @@ public void delete(String key,String fileName) throws KeyValueException
             currentRandomAccessFile.writeBytes("\n");
         }
 
-    
+        if(dataCount-1 == 0)
+        {
+            currentRandomAccessFile.close();
+            currentFile.delete();
+        }
+        else
+        {
         String strDataCount=String.valueOf(dataCount-1);
         while(strDataCount.length()<3) strDataCount+=" ";
         currentRandomAccessFile.seek(0);
         currentRandomAccessFile.writeBytes(strDataCount);
         currentRandomAccessFile.close();
+        }
         tempRandomAccessFile.close();
         tempFile.delete();
         return;

@@ -12,9 +12,16 @@ try
 KeyValueHandlerInterface kvd;
 kvd=KeyValueHandler.getKeyValueHandler("C:\\Users\\harsh\\Desktop\\DataFiles\\");
 //kvd=KeyValueHandler.getKeyValueHandlerObject();
-for(int i=0;i<1000;i++)
+for(int i=0;i<5000;i++)
 {
+    try{
+        Thread.sleep(1);
+    }catch(Exception e)
+    {
+
+    }
 //kvd.set("harshjmhr@"+i,"{name : 'letssssssss check on 11"+i+i+"' sharma', age : 5444}");
+//kvd.set("harshjmhr@"+i,"{editing data brooooooooooooo AK}");
 kvd.remove("harshjmhr@"+i);
 
 }

@@ -5,6 +5,7 @@ public class OperationObject {
     private String key;
     private String fileName;
     private String value;
+    private long timestampValue;
     public void setType(String type)
     {
         this.type=type;
@@ -36,5 +37,13 @@ public class OperationObject {
     public String getValue()
     {
         return this.value;
+    }
+    public void setTimestampValue(long timestampValue)
+    {
+        this.timestampValue=timestampValue;
+    }
+    public long getTimestampValue()
+    {
+        return this.timestampValue;
     }
 }

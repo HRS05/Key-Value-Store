@@ -8,6 +8,26 @@ import java.io.*;
 import com.key.value.helper.pair.*;
 import java.lang.*;
 import java.util.concurrent.*;
+import java.sql.*;
+
+class TimeStampBasedComparator implements Comparator<OperationObject>
+{
+    public int compare(OperationObject obj_1, OperationObject obj_2) 
+    {
+        if(obj_1==null && obj_2==null) return 0;
+        if(obj_1==null) return 1;
+        if(obj_2==null) return -1;
+        long obj_1_time_stamp_value=obj_1.getTimestampValue();
+        long obj_2_time_stamp_value=obj_2.getTimestampValue();
+        
+        if (obj_1_time_stamp_value > obj_2_time_stamp_value)
+            return 1;
+        else if (obj_1_time_stamp_value < obj_2_time_stamp_value)
+            return -1;
+        return 0;
+    }
+}
+ 
 
 public class KeyValueHandler extends Thread implements KeyValueHandlerInterface
 {
@@ -15,12 +35,14 @@ public class KeyValueHandler extends Thread implements KeyValueHandlerInterface
     private String directory;
     private ConcurrentMap<String,Pair> keyValueMap=null;
     private static KeyValueHandler keyValueHandler=null;
-    private Queue<OperationObject> queue;
+    //private Queue<OperationObject> queue;
+    private PriorityQueue<OperationObject> queue=null;
     private KeyValueHandler(String directory)
     {
         this.fileName=null;
         this.directory=directory;
-        this.queue=new LinkedList<>();
+        //this.queue=new LinkedList<>();
+        this.queue=new PriorityQueue<OperationObject>(new TimeStampBasedComparator ());
         start();
 
         try{
@@ -49,12 +71,18 @@ public class KeyValueHandler extends Thread implements KeyValueHandlerInterface
             System.out.println("queue on call");
             while(this.queue.size()>0)
             {
+                try
+                {
+                    Thread.sleep(1);
+                }
+                catch(Exception e)
+                {}
+
                 OperationObject OJ=this.queue.peek(); this.queue.remove();
                 String type=OJ.getType();
                 String fileName=OJ.getFileName();
                 String key=OJ.getKey();
                 String value=OJ.getValue();
-
                 if(type=="add"){
                     try
                     {
@@ -138,6 +166,7 @@ public class KeyValueHandler extends Thread implements KeyValueHandlerInterface
             OJ.setType("edit");
             OJ.setKey(key);
             OJ.setValue(value);
+            OJ.setTimestampValue(new Timestamp(System.currentTimeMillis()).getTime());
             this.queue.add(OJ);
             return;
         }
@@ -149,6 +178,7 @@ public class KeyValueHandler extends Thread implements KeyValueHandlerInterface
             OJ.setType("add");
             OJ.setKey(key);
             OJ.setValue(value);
+            OJ.setTimestampValue(new Timestamp(System.currentTimeMillis()).getTime());
             this.queue.add(OJ);
             return;
         }
@@ -170,6 +200,7 @@ public class KeyValueHandler extends Thread implements KeyValueHandlerInterface
             OJ.setType("remove");
             OJ.setKey(key);
             OJ.setValue(value);
+            OJ.setTimestampValue(new Timestamp(System.currentTimeMillis()).getTime());
             this.queue.add(OJ);
             return;
         }

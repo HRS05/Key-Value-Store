@@ -16,8 +16,25 @@ public class KeyValueDataMaster implements KeyValueDataMasterInterface
     public ConcurrentMap<String,ArrayList<String> > populateMasterMap() throws KeyValueException
     {
         ConcurrentMap<String,ArrayList<String> > masterMap=new ConcurrentHashMap<>();
+        File directoryFile=new File(this.path);
 
+        for(File dataBase: directoryFile.listFiles())
+        {
+            if(dataBase.isDirectory()) masterMap.put(dataBase.getName(),getListOfTabel(this.path+File.separator+dataBase.getName()));
+        }
         return masterMap;
+    }
+
+   
+    private ArrayList<String> getListOfTabel(String location)
+    {
+        ArrayList<String> list=new ArrayList<>();
+        File tableFile=new File(location);
+        for(File table: tableFile.listFiles())
+        {
+            if(table.isDirectory()) list.add(table.getName());
+        }
+        return list;
     }
 
     public void createDataBase(String dataBase) throws KeyValueException
@@ -27,6 +44,7 @@ public class KeyValueDataMaster implements KeyValueDataMasterInterface
         File folderDataBase=new File(this.path+File.separator+dataBase);
         if(folderDataBase.exists()==true) throw new KeyValueException("error : database ("+dataBase+") already exist");
         folderDataBase.mkdirs();
+        haveSleep(10);
     }
 
     public void createTable(String dataBase,String table) throws KeyValueException
@@ -42,6 +60,7 @@ public class KeyValueDataMaster implements KeyValueDataMasterInterface
         File folderTable=new File(this.path+File.separator+dataBase+File.separator+table);
         if(folderTable.exists()==true) throw new KeyValueException("error: table ("+table+") already exists");
         folderTable.mkdirs();
+        haveSleep(10);
     }
 
     public void deleteDataBase(String dataBase) throws KeyValueException
@@ -49,8 +68,9 @@ public class KeyValueDataMaster implements KeyValueDataMasterInterface
         if(dataBase==null || dataBase.length()==0) throw new KeyValueException("error : dataBase name empty");
         File folderDataBase=new File(this.path+File.separator+dataBase);
         if(folderDataBase.exists()==false) throw new KeyValueException("error: dataBase("+dataBase+") does not exists");
-        KeyValueDataMaster.deleteDirectory(folderDataBase);
+        this.deleteDirectory(folderDataBase);
         folderDataBase.delete();
+        haveSleep(10);
     }
 
     public void deleteTable(String dataBase,String table) throws KeyValueException
@@ -66,18 +86,26 @@ public class KeyValueDataMaster implements KeyValueDataMasterInterface
         
         File folderTable=new File(this.path+File.separator+dataBase+File.separator+table);
         if(folderTable.exists()==false) throw new KeyValueException("error: table ("+table+")does not exists, can not delete table");
-        KeyValueDataMaster.deleteDirectory(folderTable);
+        this.deleteDirectory(folderTable);
         folderTable.delete();
+        haveSleep(10);
 
     }
 
-    private static void deleteDirectory(File directory) // used to delete contents of given directory completely
+    private  void deleteDirectory(File directory) // used to delete contents of given directory completely
     {
         for(File subFile: directory.listFiles())
         {
             if(subFile.isDirectory()) deleteDirectory(subFile);
             subFile.delete();
         }
+    }
+
+    private void haveSleep(long millis)
+    {
+        try{
+            Thread.sleep(millis);
+        }catch(Exception e){}
     }
 
 }

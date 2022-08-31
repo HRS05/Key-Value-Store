@@ -9,22 +9,38 @@ public static void main(String gg[])
 {
 try
 {
-KeyValueHandlerInterface kvd;
-kvd=KeyValueHandler.getKeyValueHandler("C:\\Users\\harsh\\Desktop\\DataFiles\\");
-//kvd=KeyValueHandler.getKeyValueHandlerObject();
-for(int i=0;i<5000;i++)
-{
-    try{
-        Thread.sleep(1);
-    }catch(Exception e)
+    KeyValueMaster kvm= KeyValueMaster.getKeyValueMaster("C:\\Users\\harsh\\Desktop\\DataFiles\\");
+    kvm.createDataBase("database1--1");
+    kvm.createDataBase("database2--2");
+    for(int i=0;i<1000;i++)
     {
-
+        kvm.createTable("database1--1","table1_"+i);
+        kvm.createTable("database2--2","table1_"+i); 
     }
-//kvd.set("harshjmhr@"+i,"{name : 'letssssssss check on 11"+i+i+"' sharma', age : 5444}");
-//kvd.set("harshjmhr@"+i,"{editing data brooooooooooooo AK}");
-kvd.remove("harshjmhr@"+i);
+    // kvm.createTable("database1","table1_1");
+    // kvm.createTable("database1","table1_2");
+    // kvm.createTable("database2","table2_1");
+    // kvm.createTable("database2","table2_2");
 
-}
+KeyValueHandlerInterface kvd;
+//kvd=KeyValueHandler.getKeyValueHandler("C:\\Users\\harsh\\Desktop\\DataFiles\\");
+
+
+
+//kvd=KeyValueHandler.getKeyValueHandlerObject();
+// for(int i=0;i<5000;i++)
+// {
+//     try{
+//         Thread.sleep(1);
+//     }catch(Exception e)
+//     {
+
+//     }
+// //kvd.set("harshjmhr@"+i,"{name : 'letssssssss check on 11"+i+i+"' sharma', age : 5444}");
+// //kvd.set("harshjmhr@"+i,"{editing data brooooooooooooo AK}");
+// kvd.remove("harshjmhr@"+i);
+
+// }
 // kvd.set("harshjmhr@207","{editing 207}");
 // kvd.set("harshjmhr@105","{editing 105}");
 // kvd.set("harshjmhr@97","{editing 97}");

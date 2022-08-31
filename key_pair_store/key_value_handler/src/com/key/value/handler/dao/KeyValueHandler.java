@@ -34,41 +34,40 @@ public class KeyValueHandler extends Thread implements KeyValueHandlerInterface
     private String fileName;
     private String directory;
     private ConcurrentMap<String,Pair> keyValueMap=null;
-    private static KeyValueHandler keyValueHandler=null;
-    //private Queue<OperationObject> queue;
+    //private static KeyValueHandler keyValueHandler=null;
     private PriorityQueue<OperationObject> queue=null;
-    private KeyValueHandler(String directory)
+    public KeyValueHandler(String directory) throws KeyValueHandlerException
     {
+        if(directory==null || directory.trim().length()==0) throw new KeyValueHandlerException("directory is null/size=0");
         this.fileName=null;
         this.directory=directory;
-        //this.queue=new LinkedList<>();
         this.queue=new PriorityQueue<OperationObject>(new TimeStampBasedComparator ());
         start();
 
         try{
             this.keyValueMap=new KeyValueDataHandler(this.directory).populateMap();
-        }catch(Exception exception){
-            this.keyValueMap=new ConcurrentHashMap<String,Pair>();
+        }catch(KeyValueException exception){
+            throw new KeyValueHandlerException("Error : issue in populating key value map for "+this.directory+" --> "+exception.getMessage());
         }
         
     }
 
-    public static KeyValueHandler getKeyValueHandler(String directory) throws KeyValueHandlerException
-    {
-        if(directory==null || directory.trim().length()==0) throw new KeyValueHandlerException("directory is null/size=0");
-        if(keyValueHandler==null)
-        {
-            keyValueHandler=new KeyValueHandler(directory);
-            return keyValueHandler;
-        }
-        return keyValueHandler;
-    }
+    // public static KeyValueHandler getKeyValueHandler(String directory) throws KeyValueHandlerException
+    // {
+    //     if(directory==null || directory.trim().length()==0) throw new KeyValueHandlerException("directory is null/size=0");
+    //     if(keyValueHandler==null)
+    //     {
+    //         keyValueHandler=new KeyValueHandler(directory);
+    //         return keyValueHandler;
+    //     }
+    //     return keyValueHandler;
+    // }
 
     public void run() 
     {
         while(true)
         {
-            System.out.println("queue on call");
+            System.out.println("queue on call for table path -> "+this.directory);
             while(this.queue.size()>0)
             {
                 try

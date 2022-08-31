@@ -62,11 +62,11 @@ public class KeyValueMaster implements KeyValueMasterInterface
             for(String tableName : entry.getValue())
             {
                 try{
-                KeyValueHandler keyValueHandler=new KeyValueHandler(this.path+dataBaseName+"//"+tableName);
-                obj.put(dataBaseName+tableName,keyValueHandler);
+                KeyValueHandler keyValueHandler=new KeyValueHandler(this.path+dataBaseName+File.separator+tableName+File.separator);
+                obj.put(tableName,keyValueHandler);
                 }catch(KeyValueHandlerException exception)
                 {
-                    throw new KeyValueHandlerException("Error in populating master for "+this.path+dataBaseName+"//"+tableName+" --> "+exception.getMessage());
+                    throw new KeyValueHandlerException("Error in populating master for "+this.path+dataBaseName+File.separator+tableName+" --> "+exception.getMessage());
                 }
             }
             this.master.put(dataBaseName,obj);

@@ -1,0 +1,25 @@
+To compile code :
+src> javac -d ..\classes;. com\key\value\helper\Pair.java
+---------------------------------------------------------------------------
+If dependencies in compilation then use
+src>javac -d ..\classes -classpath ..\..\helper\dist\keyValuehelper.jar;. com\key\value\dataHandler\dao\KeyValueDataHandler.java
+(if more dependencies present then add with adding ; in classpath)
+src>javac -d ..\classes -classpath ..\..\helper\dist\keyValuehelper.jar;. com\key\value\dataHandler\interfaces\*.java
+------------------------------------------------------------------------------------
+To make the jar files
+classes>jar -cvf ..\dist\KeyValueHelper.jar com
+classes>jar -cvf ..\dist\KeyValueDataHandler.jar com
+------------------------------------------------------------------------
+
+
+We Have three jar files in the dist folder. we have to take these in our classpath whilecompile & running testcases present in key_value_data handler.
+To Compile
+javac -classpath ..\..\helper\dist\keyValueHelper.jar;..\..\key_value_data_handler\dist\keyValueDataHandler.jar;..\dist\keyValueHandler.jar;. check.java
+ To Run
+java -classpath ..\..\helper\dist\keyValueHelper.jar;..\..\key_value_data_handler\dist\keyValueDataHandler.jar;..\dist\keyValueHandler.jar;. check
+----------------------------------------------------------------------------------------------------------------------------------------
+Currently to put data , I have created three test files check1,check2,check3;
+check1 -create two database;
+check2 -create tables;
+check - put data into tabels;
+--------------------------------------------------------------------------------------------------------------- 

@@ -1,0 +1,1 @@
+java -classpath ..\..\helper\dist\keyValueHelper.jar;..\..\key_value_data_handler\dist\keyValueDataHandler.jar;..\dist\keyValueHandler.jar;. check3
